@@ -26,7 +26,9 @@ jsonPatch=$(echo '
     ],
     "volumes": [{
       "name":"config",
-      "emptyDir":{} 	
+       "configMap":{
+       	  "name": "mounted-config"
+       }
     }]
   }
 }
@@ -37,41 +39,3 @@ jsonPatch=$(echo '
 date; oc run -i $podname --image=172.30.1.1:5000/myproject/simple-ocp-docker:latest --overrides="$jsonPatch" --restart=Never --command -- /bin/bash -c "/tmp/true.sh"; oc get pods $podname -o json | jq '.status.phase' | grep "Succeeded" ; exitcode=$(echo $?) ; date; 
 
 exit $exitcode
-
-# "command": [
-#                     "/bin/bash",
-#                     "/tmp/true.sh"
-
-
-
-# kubectl run -i --rm --tty ubuntu --overrides='
-# {
-#   "apiVersion": "batch/v1",
-#   "spec": {
-#     "template": {
-#       "spec": {
-#         "containers": [
-#           {
-#             "name": "ubuntu",
-#             "image": "ubuntu:14.04",
-#             "args": [
-#               "bash"
-#             ],
-#             "stdin": true,
-#             "stdinOnce": true,
-#             "tty": true,
-#             "volumeMounts": [{
-#               "mountPath": "/home/store",
-#               "name": "store"
-#             }]
-#           }
-#         ],
-#         "volumes": [{
-#           "name":"store",
-#           "emptyDir":{}
-#         }]
-#       }
-#     }
-#   }
-# }
-# '  --image=ubuntu:14.04 --restart=Never -- bash
