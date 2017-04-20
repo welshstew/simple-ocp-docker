@@ -5,6 +5,6 @@ USER root
 COPY bin/ /usr/bin/
 COPY tmp/ /tmp
 
-RUN /usr/bin/fix-permissions.sh /tmp
-
-USER 1001
+#RUN /usr/bin/fix-permissions.sh /tmp
+#
+#USER 1001
