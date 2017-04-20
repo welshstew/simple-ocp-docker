@@ -1,3 +1,3 @@
-echo "THIS is FAIL - STROUT"
-echo "THIS is FAIL - STDERR" >&2
-exit 1
+echo "THIS is SUCCESS - STROUT"
+echo "THIS is SUCCESS - STDERR" >&2
+exit 0
