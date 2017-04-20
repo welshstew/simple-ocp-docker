@@ -3,32 +3,21 @@
 # see http://stackoverflow.com/questions/37555281/create-kubernetes-pod-with-volume-using-kubectl-run
 randpw(){ < /dev/urandom tr -dc a-z-0-9 | head -c${1:-8};echo;}
 
-#podname=$( randpw )
-
-podname="helloworld"
-
+podname=$( randpw )
 
 # oc create configmap mounted-config \
 #     --from-literal=animals.cats=love \
 #     --from-literal=animals.dogs=meh
-
-
-date; oc run -i helloworld --image=172.30.1.1:5000/myproject/simple-ocp-docker:latest --overrides='
+jsonPatch=$(echo '
 {
   "kind": "Pod",
   "apiVersion": "v1",
-  "metadata": {
-  	"name": "helloworld"
-  },
   "spec": {
     "containers": [
       {
-      	"name": "helloworld",
+      	"name": "whatever",
       	"image": "172.30.1.1:5000/myproject/simple-ocp-docker:latest",
-      	"command": [
-      			"/bin/bash",
-                "/tmp/true.sh"
-        ],
+      	"command": ["/bin/bash", "/tmp/true.sh" ],
         "volumeMounts": [{
           "mountPath": "/var/config",
           "name": "config"
@@ -37,11 +26,15 @@ date; oc run -i helloworld --image=172.30.1.1:5000/myproject/simple-ocp-docker:l
     ],
     "volumes": [{
       "name":"config",
-      "emptyDir":{}
+      "emptyDir":{} 	
     }]
   }
 }
-' --restart=Never --command -- /bin/bash -c "/tmp/true.sh"; oc get pods $podname -o json | jq '.status.phase' | grep "Succeeded" ; exitcode=$(echo $?) ; date; 
+' | jq -r --arg PODNAME "$podname" '.spec.containers[0].name = $PODNAME')
+
+
+
+date; oc run -i $podname --image=172.30.1.1:5000/myproject/simple-ocp-docker:latest --overrides="$jsonPatch" --restart=Never --command -- /bin/bash -c "/tmp/true.sh"; oc get pods $podname -o json | jq '.status.phase' | grep "Succeeded" ; exitcode=$(echo $?) ; date; 
 
 exit $exitcode
 
