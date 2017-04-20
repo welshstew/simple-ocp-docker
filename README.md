@@ -19,6 +19,7 @@ oc run -i falsetest --image=172.30.1.1:5000/myproject/simple-ocp-docker:latest -
 ## Generating exit code
 
 Added this in as a workaround..
+You'll [need jq](https://stedolan.github.io/jq/)
 
 1. generates a random pod name
 2. runs the task
